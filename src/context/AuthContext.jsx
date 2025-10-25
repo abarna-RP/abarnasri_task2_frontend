@@ -3,6 +3,9 @@ import axios from 'axios';
 
 const AuthContext = createContext();
 
+// API Base URL - Render deployed backend
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://abarnasri-task2-backend.onrender.com';
+
 export const useAuth = () => {
   return useContext(AuthContext);
 };
@@ -10,6 +13,11 @@ export const useAuth = () => {
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  // Configure axios base URL
+  useEffect(() => {
+    axios.defaults.baseURL = API_BASE_URL;
+  }, []);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
