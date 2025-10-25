@@ -4,7 +4,7 @@ import axiosInstance from '../api/axios';
 import axios from 'axios'
 const Groups = () => {
   const { user } = useAuth();
-  const [groups, setGroups] = useState([]);
+  const [groups, setGroups] = useState([null]);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [showAddMemberForm, setShowAddMemberForm] = useState(null);
   const [formData, setFormData] = useState({
