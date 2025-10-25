@@ -1,16 +1,53 @@
-# React + Vite
+# 🎓 Student, Group & Assignment Management System (Frontend)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is the **frontend** part of the Joineazy Full Stack Engineer Intern Task 2 project.  
+The app provides a role-based interface for **Students** and **Professors (Admins)** to manage assignments, track submissions, and view progress visually.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🚀 Live Demo
+🔗 **Frontend (Netlify):** [https://incredible-piroshki-d187ed.netlify.app/](https://incredible-piroshki-d187ed.netlify.app/)
 
-## React Compiler
+---
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 🧩 Tech Stack
+- **React.js** (Frontend framework)
+- **Tailwind CSS** (UI styling)
+- **Axios** (API requests)
+- **React Router DOM** (Navigation)
+- **JWT Authentication** (via backend)
+- **Vite** (Development server)
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## 🧠 Features
+
+### 🎓 Student Role
+- Register and login securely (JWT-based).
+- Create and manage groups.
+- Add/invite members using student email or ID.
+- View all assignments posted by professors.
+- Access OneDrive submission links.
+- Confirm assignment submissions (two-step verification).
+- Track submission progress via visual progress bars.
+
+### 👨‍🏫 Admin (Professor) Role
+- Create, edit, and view assignments.
+- Assign work to specific students or groups.
+- Track submission confirmations group-wise and student-wise.
+- View analytics and performance summaries.
+
+---
+
+## ⚙️ Installation & Setup
+
+```bash
+# Clone the repository
+git clone https://github.com/abarna-RP/abarnasri_task2_frontend.git
+cd abarnasri_task2_frontend
+
+# Install dependencies
+npm install
+
+# Run the development server
+npm run dev
