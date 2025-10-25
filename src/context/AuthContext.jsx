@@ -1,10 +1,10 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import axiosInstance from '../api/axios';
-
+import axios from 'axios'
 const AuthContext = createContext();
 
 // API Base URL - Render deployed backend
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://abarnasri-task2-backend.onrender.com';
+const API_BASE_URL = import.meta.env.REACT_APP_API_URL || 'https://abarnasri-task2-backend.onrender.com';
 
 export const useAuth = () => {
   return useContext(AuthContext);
@@ -31,7 +31,8 @@ export const AuthProvider = ({ children }) => {
 
   const fetchUser = async () => {
     try {
-      const response = await axios.get('/api/auth/me');
+      const response = await axiosInstance.get('/api/auth/me');
+
       setUser(response.data);
     } catch (error) {
       localStorage.removeItem('token');

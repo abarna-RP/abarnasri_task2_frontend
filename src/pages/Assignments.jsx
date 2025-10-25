@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import axiosInstance from '../api/axios';
-
+import axios from 'axios'
 const Assignments = () => {
   const { user } = useAuth();
   const [assignments, setAssignments] = useState([]);

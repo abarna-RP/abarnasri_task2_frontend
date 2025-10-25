@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import axiosInstance from '../api/axios';
-
+import axios from 'axios'
 const Groups = () => {
   const { user } = useAuth();
   const [groups, setGroups] = useState([]);
