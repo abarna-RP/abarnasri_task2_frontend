@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import axiosInstance from '../api/axios.jsx';  // ✅ Correct import
+import axiosInstance from '../api/axios';  // ✅ Correct import
 
 const Submissions = () => {
   const { user } = useAuth();
