@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import axios from 'axios';
+import axiosInstance from '../axiosInstance';
 
 const Assignments = () => {
   const { user } = useAuth();
@@ -27,7 +27,7 @@ const Assignments = () => {
 
   const fetchAssignments = async () => {
     try {
-      const response = await axios.get('/api/assignments');
+      const response = await axiosInstance.get('/api/assignments');
       setAssignments(response.data);
     } catch (error) {
       setError('Failed to fetch assignments');
@@ -36,7 +36,7 @@ const Assignments = () => {
 
   const fetchGroups = async () => {
     try {
-      const response = await axios.get('/api/groups');
+      const response = await axiosInstance.get('/api/groups');
       setGroups(response.data);
     } catch (error) {
       console.error('Failed to fetch groups');
@@ -49,7 +49,7 @@ const Assignments = () => {
     setError('');
 
     try {
-      await axios.post('/api/assignments', formData);
+      await axiosInstance.post('/api/assignments', formData);
       setFormData({
         title: '',
         description: '',

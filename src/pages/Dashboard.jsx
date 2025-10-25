@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import axios from 'axios';
+import axiosInstance from '../axiosInstance';
 
 const Dashboard = () => {
   const { user } = useAuth();
@@ -19,10 +19,10 @@ const Dashboard = () => {
   const fetchStats = async () => {
     try {
       const [groupsRes, assignmentsRes, submissionsRes] = await Promise.all([
-        axios.get('/api/groups'),
-        axios.get('/api/assignments'),
+        axiosInstance.get('/api/groups'),
+        axiosInstance.get('/api/assignments'),
         user.role === 'professor' 
-          ? axios.get('/api/submissions')
+          ? axiosInstance.get('/api/submissions')
           : Promise.resolve({ data: [] })
       ]);
 

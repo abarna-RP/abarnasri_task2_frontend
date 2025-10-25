@@ -1,8 +1,8 @@
-import axios from 'axios';
+import axiosInstance from '../axiosInstance';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://abarnasri-task2-backend.onrender.com';
 
-const axiosInstance = axios.create({
+const axiosInstance = axiosInstance.create({
   baseURL: API_BASE_URL,
   timeout: 10000,
 });
