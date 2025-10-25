@@ -19,10 +19,10 @@ const Dashboard = () => {
   const fetchStats = async () => {
     try {
       const [groupsRes, assignmentsRes, submissionsRes] = await Promise.all([
-        axiosInstance.get('/api/groups'),
-        axiosInstance.get('/api/assignments'),
+        axios.get('/api/groups'),
+        axios.get('/api/assignments'),
         user.role === 'professor' 
-          ? axiosInstance.get('/api/submissions')
+          ? axios.get('/api/submissions')
           : Promise.resolve({ data: [] })
       ]);
 

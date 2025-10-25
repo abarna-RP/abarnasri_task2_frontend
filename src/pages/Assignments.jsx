@@ -27,7 +27,7 @@ const Assignments = () => {
 
   const fetchAssignments = async () => {
     try {
-      const response = await axiosInstance.get('/api/assignments');
+      const response = await axios.get('/api/assignments');
       setAssignments(response.data);
     } catch (error) {
       setError('Failed to fetch assignments');
@@ -36,7 +36,7 @@ const Assignments = () => {
 
   const fetchGroups = async () => {
     try {
-      const response = await axiosInstance.get('/api/groups');
+      const response = await axios.get('/api/groups');
       setGroups(response.data);
     } catch (error) {
       console.error('Failed to fetch groups');
@@ -49,7 +49,7 @@ const Assignments = () => {
     setError('');
 
     try {
-      await axiosInstance.post('/api/assignments', formData);
+      await axios.post('/api/assignments', formData);
       setFormData({
         title: '',
         description: '',

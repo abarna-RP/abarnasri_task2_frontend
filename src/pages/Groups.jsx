@@ -23,7 +23,7 @@ const Groups = () => {
 
   const fetchGroups = async () => {
     try {
-      const response = await axiosInstance.get('/api/groups');
+      const response = await axios.get('/api/groups');
       setGroups(response.data);
     } catch (error) {
       setError('Failed to fetch groups');
@@ -36,7 +36,7 @@ const Groups = () => {
     setError('');
 
     try {
-      await axiosInstance.post('/api/groups', formData);
+      await axios.post('/api/groups', formData);
       setFormData({ name: '', description: '' });
       setShowCreateForm(false);
       fetchGroups();
@@ -53,7 +53,7 @@ const Groups = () => {
     setError('');
 
     try {
-      await axiosInstance.post(`/api/groups/${groupId}/members`, addMemberData);
+      await axios.post(`/api/groups/${groupId}/members`, addMemberData);
       setAddMemberData({ email: '' });
       setShowAddMemberForm(null);
       fetchGroups();

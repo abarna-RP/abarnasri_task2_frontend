@@ -29,7 +29,7 @@ const Submissions = () => {
 
   const fetchAssignments = async () => {
     try {
-      const response = await axiosInstance.get('/api/assignments');  // ✅ axiosInstance
+      const response = await axios.get('/api/assignments');  // ✅ axiosInstance
       setAssignments(response.data || []);
     } catch (error) {
       setError('Failed to fetch assignments');
@@ -39,7 +39,7 @@ const Submissions = () => {
 
   const fetchGroups = async () => {
     try {
-      const response = await axiosInstance.get('/api/groups');  // ✅ axiosInstance
+      const response = await axios.get('/api/groups');  // ✅ axiosInstance
       setGroups(response.data || []);
       if (response.data && response.data.length > 0) {
         setSelectedGroup(response.data[0]._id);
@@ -52,7 +52,7 @@ const Submissions = () => {
 
   const fetchSubmissions = async (groupId) => {
     try {
-      const response = await axiosInstance.get(`/api/submissions/group/${groupId}`);  // ✅ axiosInstance
+      const response = await axios.get(`/api/submissions/group/${groupId}`);  // ✅ axiosInstance
       setSubmissions(response.data || []);
     } catch (error) {
       setError('Failed to fetch submissions');
@@ -66,7 +66,7 @@ const Submissions = () => {
     setError('');
 
     try {
-      await axiosInstance.post('/api/submissions', {  // ✅ axiosInstance
+      await axios.post('/api/submissions', {  // ✅ axiosInstance
         assignmentId: submitData.assignmentId,
         groupId: selectedGroup,
         submissionLink: submitData.submissionLink
@@ -83,7 +83,7 @@ const Submissions = () => {
 
   const handleConfirmSubmission = async (submissionId) => {
     try {
-      await axiosInstance.post(`/api/submissions/${submissionId}/confirm`);  // ✅ axiosInstance
+      await axios.post(`/api/submissions/${submissionId}/confirm`);  // ✅ axiosInstance
       fetchSubmissions(selectedGroup);
     } catch (error) {
       setError('Failed to confirm submission');
