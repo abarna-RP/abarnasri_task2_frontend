@@ -1,4 +1,4 @@
-import axiosInstance from '../api/axios';
+import axiosInstance from '../api/axios.jsx';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://abarnasri-task2-backend.onrender.com';
 
