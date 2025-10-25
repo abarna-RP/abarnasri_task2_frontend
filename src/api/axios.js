@@ -1,4 +1,4 @@
-import axiosInstance from '../api/axios.jsx';
+import axios from 'axios';
 
 const API_BASE_URL = process.env.REACT_APP_API_URL || 'https://abarnasri-task2-backend.onrender.com';
 
@@ -8,7 +8,7 @@ const axiosInstance = axios.create({
 });
 
 // Request interceptor to add auth token
-axios.interceptors.request.use(
+axiosInstance.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
     if (token) {
@@ -22,7 +22,7 @@ axios.interceptors.request.use(
 );
 
 // Response interceptor for error handling
-axios.interceptors.response.use(
+axiosInstance.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
