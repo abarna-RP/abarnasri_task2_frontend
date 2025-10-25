@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import axiosInstance from '../axiosInstance';
+import axiosInstance from '../api/axios';
 
 const Dashboard = () => {
   const { user } = useAuth();
