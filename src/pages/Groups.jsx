@@ -1,72 +1,102 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import axiosInstance from '../api/axios';
-import axios from 'axios'
+import axiosInstance from '../api/axios'; // use this consistently
+
 const Groups = () => {
   const { user } = useAuth();
-  const [groups, setGroups] = useState([null]);
+  const [groups, setGroups] = useState([]);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [showAddMemberForm, setShowAddMemberForm] = useState(null);
-  const [formData, setFormData] = useState({
-    name: '',
-    description: ''
-  });
-  const [addMemberData, setAddMemberData] = useState({
-    email: ''
-  });
-  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({ name: '', description: '' });
+  const [addMemberData, setAddMemberData] = useState({ email: '' });
+  const [loadingCreate, setLoadingCreate] = useState(false);
+  const [loadingAddMember, setLoadingAddMember] = useState(false);
+  const [fetching, setFetching] = useState(false);
   const [error, setError] = useState('');
 
   useEffect(() => {
     fetchGroups();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchGroups = async () => {
+    setFetching(true);
+    setError('');
     try {
-      const response = await axios.get('/api/groups');
-      setGroups(response.data);
-    } catch (error) {
+      // using axiosInstance (so baseURL and interceptors apply)
+      const response = await axiosInstance.get('/api/groups');
+      // response.data should be an array; keep it defensive
+      const data = Array.isArray(response.data) ? response.data : response.data?.data || [];
+      setGroups(data);
+      console.log('fetched groups:', data);
+    } catch (err) {
+      console.error(err);
       setError('Failed to fetch groups');
+    } finally {
+      setFetching(false);
     }
   };
 
   const handleCreateGroup = async (e) => {
     e.preventDefault();
-    setLoading(true);
+    setLoadingCreate(true);
     setError('');
-
     try {
-      await axios.post('/api/groups', formData);
+      // use axiosInstance so auth headers, baseURL applied
+      await axiosInstance.post('/api/groups', formData);
       setFormData({ name: '', description: '' });
       setShowCreateForm(false);
-      fetchGroups();
-    } catch (error) {
-      setError(error.response?.data?.message || 'Failed to create group');
+      await fetchGroups();
+    } catch (err) {
+      console.error('create group error:', err);
+      setError(err?.response?.data?.message || 'Failed to create group');
     } finally {
-      setLoading(false);
+      setLoadingCreate(false);
     }
   };
 
   const handleAddMember = async (groupId, e) => {
     e.preventDefault();
-    setLoading(true);
+    setLoadingAddMember(true);
     setError('');
-
     try {
-      await axios.post(`/api/groups/${groupId}/members`, addMemberData);
+      await axiosInstance.post(`/api/groups/${groupId}/members`, addMemberData);
       setAddMemberData({ email: '' });
       setShowAddMemberForm(null);
-      fetchGroups();
-    } catch (error) {
-      setError(error.response?.data?.message || 'Failed to add member');
+      await fetchGroups();
+    } catch (err) {
+      console.error('add member error:', err);
+      setError(err?.response?.data?.message || 'Failed to add member');
     } finally {
-      setLoading(false);
+      setLoadingAddMember(false);
     }
+  };
+
+  // helper safe accessors
+  const getMemberCount = (group) => {
+    // API has memberCount; fallback to members length if provided
+    if (typeof group.memberCount === 'number') return group.memberCount;
+    if (Array.isArray(group.members)) return group.members.length;
+    if (typeof group.member === 'number') return group.member; // in case old key
+    return 0;
+  };
+
+  const getMembers = (group) => {
+    // ensure it's always an array to avoid map errors
+    if (Array.isArray(group.members)) return group.members;
+    // if API returns membersList or similar, adapt here
+    return [];
+  };
+
+  // safe id comparison: convert both sides to string
+  const isCreator = (group) => {
+    const createdById = group?.createdBy?._id ?? group?.createdBy ?? group?._idCreated;
+    return String(createdById) === String(user?.id ?? user?._id);
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-600 via-blue-600 to-cyan-500 relative overflow-hidden">
-      {/* Enhanced Animated Background */}
+      {/* ... background, floating particles (unchanged) ... */}
       <div className="absolute inset-0">
         <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-300/30 rounded-full mix-blend-soft-light filter blur-3xl opacity-30 animate-blob"></div>
         <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-yellow-300/30 rounded-full mix-blend-soft-light filter blur-3xl opacity-30 animate-blob animation-delay-2000"></div>
@@ -74,7 +104,6 @@ const Groups = () => {
         <div className="absolute top-1/2 right-1/3 w-80 h-80 bg-blue-300/20 rounded-full mix-blend-soft-light filter blur-2xl opacity-20 animate-blob animation-delay-6000"></div>
       </div>
 
-      {/* Floating Particles */}
       <div className="absolute inset-0">
         {[...Array(15)].map((_, i) => (
           <div
@@ -91,7 +120,6 @@ const Groups = () => {
       </div>
 
       <div className="relative max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
-        {/* Header Section */}
         <div className="flex justify-between items-center mb-8">
           <div className="bg-white/15 backdrop-blur-xl rounded-3xl border border-white/25 p-6 relative overflow-hidden">
             <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.1)_1px,transparent_1px)] bg-[size:20px_20px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,black,transparent)]"></div>
@@ -120,7 +148,6 @@ const Groups = () => {
           </div>
         )}
 
-        {/* Create Group Form */}
         {showCreateForm && (
           <div className="bg-white/15 backdrop-blur-xl rounded-3xl border border-white/25 p-8 mb-8 relative overflow-hidden">
             <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.1)_1px,transparent_1px)] bg-[size:20px_20px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,black,transparent)]"></div>
@@ -157,27 +184,17 @@ const Groups = () => {
                 <div className="flex space-x-4">
                   <button
                     type="submit"
-                    disabled={loading}
+                    disabled={loadingCreate}
                     className="bg-white/25 backdrop-blur-lg hover:bg-white/35 border-2 border-white/40 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 hover:shadow-xl active:scale-95 disabled:opacity-50"
                   >
-                    {loading ? (
-                      <div className="flex items-center backdrop-blur-sm">
-                        <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                        Creating...
-                      </div>
-                    ) : (
-                      <span className="backdrop-blur-sm">Create Group</span>
-                    )}
+                    {loadingCreate ? 'Creating...' : 'Create Group'}
                   </button>
                   <button
                     type="button"
                     onClick={() => setShowCreateForm(false)}
                     className="bg-white/10 backdrop-blur-lg hover:bg-white/20 border-2 border-white/30 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 hover:shadow-xl active:scale-95"
                   >
-                    <span className="backdrop-blur-sm">Cancel</span>
+                    Cancel
                   </button>
                 </div>
               </form>
@@ -188,7 +205,7 @@ const Groups = () => {
         {/* Groups List */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {groups.map((group) => (
-            <div key={group._id} className="bg-white/15 backdrop-blur-xl rounded-3xl border border-white/25 p-6 relative overflow-hidden hover:transform hover:scale-105 transition-all duration-300 hover:shadow-2xl">
+            <div key={group._id ?? group.id} className="bg-white/15 backdrop-blur-xl rounded-3xl border border-white/25 p-6 relative overflow-hidden hover:transform hover:scale-105 transition-all duration-300 hover:shadow-2xl">
               <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.1)_1px,transparent_1px)] bg-[size:20px_20px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,black,transparent)]"></div>
               <div className="relative z-10">
                 <h3 className="text-xl font-bold text-white mb-3 drop-shadow-lg">{group.name}</h3>
@@ -201,14 +218,14 @@ const Groups = () => {
                     <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                     </svg>
-                    Members ({group.members.length})
+                    Members ({getMemberCount(group)})
                   </h4>
                   <div className="space-y-2">
-                    {group.members.map((member) => (
-                      <div key={member._id} className="flex items-center text-sm text-white/80 backdrop-blur-sm bg-white/10 px-3 py-2 rounded-xl border border-white/20">
-                        <span className="w-2 h-2 bg-green-400 rounded-full mr-3"></span>
+                    {getMembers(group).map((member) => (
+                      <div key={member._id ?? member.email ?? Math.random()} className="flex items-center text-sm text-white/80 backdrop-blur-sm bg-white/10 px-3 py-2 rounded-xl border border-white/20">
+                        <span className={`w-2 h-2 ${member.online ? 'bg-green-400' : 'bg-gray-400'} rounded-full mr-3`} />
                         <div>
-                          <div className="font-medium">{member.name}</div>
+                          <div className="font-medium">{member.name ?? member.email ?? 'Unknown'}</div>
                           {member.studentId && (
                             <div className="text-xs text-white/60">ID: {member.studentId}</div>
                           )}
@@ -218,10 +235,10 @@ const Groups = () => {
                   </div>
                 </div>
 
-                {group.createdBy._id === user.id && (
+                {isCreator(group) && (
                   <div className="space-y-3">
-                    {showAddMemberForm === group._id ? (
-                      <form onSubmit={(e) => handleAddMember(group._id, e)} className="space-y-3">
+                    {showAddMemberForm === (group._id ?? group.id) ? (
+                      <form onSubmit={(e) => handleAddMember(group._id ?? group.id, e)} className="space-y-3">
                         <input
                           type="email"
                           required
@@ -233,10 +250,10 @@ const Groups = () => {
                         <div className="flex space-x-3">
                           <button
                             type="submit"
-                            disabled={loading}
+                            disabled={loadingAddMember}
                             className="bg-white/25 backdrop-blur-lg hover:bg-white/35 border-2 border-white/40 text-white px-4 py-2 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 hover:shadow-xl active:scale-95 disabled:opacity-50 flex-1"
                           >
-                            Add Member
+                            {loadingAddMember ? 'Adding...' : 'Add Member'}
                           </button>
                           <button
                             type="button"
@@ -249,7 +266,7 @@ const Groups = () => {
                       </form>
                     ) : (
                       <button
-                        onClick={() => setShowAddMemberForm(group._id)}
+                        onClick={() => setShowAddMemberForm(group._id ?? group.id)}
                         className="w-full bg-white/25 backdrop-blur-lg hover:bg-white/35 border-2 border-white/40 text-white px-4 py-3 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 hover:shadow-xl active:scale-95"
                       >
                         <span className="backdrop-blur-sm">Add Member</span>
@@ -262,7 +279,7 @@ const Groups = () => {
           ))}
         </div>
 
-        {groups.length === 0 && (
+        {groups.length === 0 && !fetching && (
           <div className="text-center py-16">
             <div className="bg-white/15 backdrop-blur-xl rounded-3xl border border-white/25 p-12 relative overflow-hidden">
               <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.1)_1px,transparent_1px)] bg-[size:20px_20px] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_50%,black,transparent)]"></div>
@@ -284,9 +301,13 @@ const Groups = () => {
             </div>
           </div>
         )}
+
+        {fetching && (
+          <div className="text-center my-8 text-white/80">Loading groups...</div>
+        )}
       </div>
 
-      {/* Custom CSS for enhanced animations */}
+      {/* keep your animation CSS unchanged */}
       <style jsx>{`
         @keyframes blob {
           0% { transform: translate(0px, 0px) scale(1); }
